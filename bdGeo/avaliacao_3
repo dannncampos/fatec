@@ -1,0 +1,35 @@
+-- 1) Fazer uma consulta para listar os alunos que não possuem sexo e apresente o resultado ordenado pelo nome.
+
+select *
+from tbaluno
+where sexo is null
+order by nome asc;
+
+-- 2) Fazer uma consulta para listar os alunos que possuem o nome começando pela letra M e apresente o resultado ordenado pela idade.
+
+select *
+from tbaluno
+where nome like 'M%'
+order by idade asc;
+
+-- 3) Fazer uma consulta para listar os alunos que possuem o nome terminando pela letra a e apresente o resultado ordenado pela idade.
+
+
+select *
+from tbaluno
+where nome like '%a'
+order by idade asc;
+
+-- 4) Fazer uma consulta para listar os alunos que possuem o nome começando e terminando pela letra a e apresente o resultado ordenado pela idade.
+
+select *
+from tbaluno
+where nome like 'A%a'
+order by idade asc;
+
+-- 5) Fazer uma consulta para listar os alunos que possuem a letra g em qualquer parte do nome e as disciplinas cursadas por cada um deles. Apresente o resultado ordenado pelo nome e disciplina.
+
+select a.nome, b.disciplina, b.nota
+from tbaluno as a, tbnota as b
+where a.idaluno = b.idaluno and a.nome ilike '%g%'
+order by a.nome, b.disciplina asc;
