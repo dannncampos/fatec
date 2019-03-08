@@ -1,0 +1,31 @@
+-- 1) Fazer  uma consulta  para listar  somente o nome dos produtos que possuem valor acima de 5 reais.
+
+
+select nome
+from tbproduto
+where valor > 5;
+
+-- 2) Fazer  uma  consulta  para  listar  o  nome  e  valor dos  produtos que possuem valor entre 2 e 5 reais.
+
+
+select nome, valor
+from tbproduto
+where valor < 5 and valor > 2;
+
+-- 3) Fazer  uma  consulta  para  listar  o  nome  e  valor dos  produtos que possuem valor abaixo de 2 e acima de 5 reais.
+
+select nome, valor
+from tbproduto
+where valor < 2 or valor > 5;
+
+-- 4) Fazer uma consulta para listar o registro que possui o produto sal.
+
+select *
+from tbproduto
+where nome = 'sal';
+
+-- 5) Fazer uma consulta para listar os produtos cujo o idproduto seja menor que o valor
+
+select *
+from tbproduto
+where idproduto < valor;
