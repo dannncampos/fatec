@@ -1,3 +1,4 @@
+# Created on Friday, 8:00 pm, March - 08 - 2019
 def digito(peso, fim):
     s = 0
     i = 0
