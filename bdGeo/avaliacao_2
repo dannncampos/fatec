@@ -1,0 +1,34 @@
+-- 1) Fazer uma consulta para listar os alunos que são do sexo masculino e que possuem mais de 21 anos.
+
+select *
+from tbaluno
+where sexo = 'M' and idade >= 20;
+
+-- 2)  Fazer uma consulta para listar os registros que estão reprovados. Para estar reprovado a nota precisa ser inferior
+a 6.
+
+select *
+from tbaluno as a, tbnota as b
+where b.nota < 6
+order by a.nome;
+
+-- 3) Exercício - Fazer uma consulta para listar o nome, disciplina e nota de cada aluno.
+
+select a.nome, b.disciplina, b.nota
+from tbaluno as a, tbnota as b
+order by a.nome;
+
+-- 4) Fazer uma consulta para listar o nome, disciplina e nota de cada aluno reprovado.
+
+select a.nome, b.disciplina, b.nota
+from tbaluno as a, tbnota as b
+where b.nota < 6
+order by a.nome;
+
+-- 5) Adicionar na consulta do Exercício 4 a restrição
+para listar somente os alunos do sexo masculino.
+
+select a.nome, b.disciplina, b.nota
+from tbaluno as a, tbnota as b
+where b.nota < 6 and a.sexo = 'M'
+order by a.nome;
