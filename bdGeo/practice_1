@@ -1,0 +1,233 @@
+-- 2) Exercício.
+
+
+create table tbEmpregado (
+    cpf character(11) not null primary key,
+    nome character varying(40) not null,
+    telefone character(11) null,
+    sexo character(1) null,
+    nroDep integer not null
+);
+
+-- 3) Exercício.
+
+
+create table tbDependente(
+    nome character varying(40) not null,
+    cpfEmp character(11) not null,
+    dataNasc date not null,
+    sexo character(1) null,
+    relacao character varying(10) not null,
+    primary key(nome, cpfEmp)
+);
+
+-- 4) Exercício.
+
+create table tbDepartamento(
+    nroDep integer not null primary key,
+    nome character varying(30) not null,
+    telefone character(10),
+    cpfGer character(11) not null
+);
+
+-- 5) Exercício.
+
+create table tbProjeto (
+    nroProj integer not null primary key,
+    nome character varying(30) not null,
+    nroDep integer not null,
+    custo double precision
+);
+
+-- 6) Exercício.
+
+create table tbTrabalhaEm (
+    cpfEmp character(11) not null,
+    nroProj integer not null,
+    nroHoras integer not null,
+    primary key (cpfEmp, nroProj)
+);
+
+-- 7) Exercício.
+
+insert into tbempregado(cpf,nome,telefone,sexo,nroDep)
+values
+('123456789', 'José Carlos', NULL , 'M', 3),
+('987654321', 'Cleber Silva', '65432101', 'M', 1),
+('654321098', 'Antônio Carlos', '65431234', 'M', 5),
+('876543345', 'Mariana Souza', '67899876', 'F', 1),
+('765432123', 'Erico Faria', '23455432', 'M', 5),
+('345678901', 'Flavia Alves', '23456789', 'F', 2),
+('876543210', 'Lucia Helen', '65432178', 'F', 1),
+('234321123', 'Paulo Ramos', '56789000', 'M', 3),
+('987456432', 'Gabriela Novaes', '50987654', 'F', 4);
+
+-- 8) Exercício.
+
+insert into tbdependente(nome,cpfEmp,dataNasc,sexo,relacao)
+values
+('José Augusto', '876543345', '1998-08-09', 'M', 'filho'),
+('Ana Claudia', '654321098', '2001-04-30', 'F', 'filho'),
+('Julia Maria', '654321098', '1993-05-16', 'F', 'filho'),
+('Augusto Pena', '987654321', '1996-01-31', 'M', 'neto'),
+('Carlos Eduardo', '345678901', '1989-12-17', 'M', 'filho'),
+('Ives', '876543345', '2005-01-20', 'F', 'filho');
+
+-- 9) Exercício.
+
+insert into tbdepartamento(nroDep,nome,telefone,cpfGer)
+values
+(1, 'Administração', '98765432', '876543210'),
+(2, 'Estoque', '96543210', '345678901'),
+(3, 'Pesquisa', '56785678', '234321123'),
+(4, 'Manutenção', '45677654', '987456432'),
+(5, 'Produção', '5678901', '765432123');
+
+-- 10) Exercício.
+
+insert into tbprojeto(nroProj,nome,nroDep,custo)
+values
+(1, 'Novas fontes de energia', 3, 300000),
+(2, 'RaioX', 1, 12000),
+(3, 'Melhorias', 5, 25000),
+(4, 'ABC', 3, 150000),
+(5, 'Otimização', 2, 17000),
+(6, 'Melhorias no trabalho', 1, 9000);
+
+-- 11) Exercício.
+
+insert into tbTrabalhaEm(cpfEmp,nroProj,nroHoras)
+values
+('123456789', 6, 8), ('987456432', 5, 10),
+('234321123', 4, 12), ('987654321', 3, 18),
+('345678901', 2, 12), ('876543210', 2, 10),
+('654321098', 1, 12), ('765432123', 2, 20),
+('876543345', 4, 18), ('234321123', 2, 14),
+('123456789', 2, 10), ('987654321', 5, 18);
+
+-- 12) Exercício.
+
+select *
+from tbempregado
+where nrodep = 5;
+
+-- 13) Exercício.
+
+select nome,telefone
+from tbempregado;
+
+-- 14) Exercício.
+
+select a.nome
+from tbempregado as a, tbdepartamento as b
+where a.cpf = b.cpfGer and
+      b.nroDep = 5;
+
+-- 15) Exercício.
+
+select a.nome, b.nome
+from tbempregado as a, tbdepartamento as b
+where a.nroDep = b.nroDep;
+
+-- 16) Exercício.
+
+select a.nome as "Empregado", b.nome as "Departamento"
+from tbempregado as a, tbdepartamento as b
+where a.nroDep = b.nroDep;
+
+-- 17) Exercício.
+
+select a.nome, a.telefone
+from tbempregado as a, tbdepartamento as b
+where a.nroDep = b.nroDep and
+      b.nome = 'Administração';
+
+-- 18) Exercício.
+
+select b.*
+from tbempregado as a, tbdependente as b
+where a.cpf = b.cpfemp and
+      a.nome = 'Antônio Carlos';
+      
+-- 19) Exercício.
+
+select a.nome, b.nome
+from tbempregado as a, tbdependente as b
+where a.cpf = b.cpfemp and
+      b.relacao = 'neto';
+
+-- 20) Exercício.
+
+select a.nome, b.nome, c.nome
+from tbempregado as a, tbdependente as b, tbdepartamento as c
+where a.cpf = b.cpfemp and
+      a.nroDep = c.nroDep and
+      b.relacao = 'neto';
+      
+-- 21) Exercício.
+
+select a.nome
+from tbempregado as a, tbtrabalhaem as b, tbprojeto as c
+where a.cpf = b.cpfEmp and
+      b.nroProj = c.nroProj and
+      c.nome = 'RaioX';
+      
+-- 22) Exercício.
+
+select a.nome as "Empregado", b.nome as "Dependente"
+from tbempregado as a, tbdependente as b, tbdepartamento as c
+where a.cpf = b.cpfemp and
+      a.nroDep = c.nroDep and
+      c.nome = 'Estoque';
+      
+-- 23) Exercício.
+
+select a.nome
+from tbempregado as a, tbtrabalhaem as b, tbprojeto as c
+where a.cpf = b.cpfEmp
+      and
+      b.nroProj = c.nroProj
+      and
+      c.nome = 'RaioX'
+      and
+      b.nroHoras > 10;
+
+-- 24) Exercício.
+
+select b.*
+from tbdepartamento as a, tbprojeto as b
+where a.nroDep = b.nroDep and
+      a.nome = 'Pesquisa';
+
+-- 25) Exercício.
+
+select c.*
+from tbempregado as a, tbtrabalhaem as b, tbprojeto as c
+where a.cpf = b.cpfEmp
+      and
+      b.nroProj = c.nroProj
+      and
+      a.nome = 'Cleber Silva'
+      and
+      c.custo > 20000;
+
+-- 26) Exercício.
+
+select distinct d.nome
+from tbempregado as a, tbtrabalhaem as b,
+     tbprojeto as c, tbdepartamento as d
+where a.cpf = b.cpfEmp
+      and
+      b.nroProj = c.nroProj
+      and
+      a.nroDep = d.nroDep
+      and
+      c.nome = 'RaioX'
+order by d.nome desc;
+
+-- 27) Exercício.
+
+select b.*
+from tbempregado as a, tbempregado as b
+where a.nroDep = b.nroDep and
+      a.nome = 'Lucia Helen';
