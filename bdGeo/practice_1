@@ -1,5 +1,11 @@
--- 2) Exercício.
+-- 1) Criar um BD de nome bdatividade1 usando o pgAdmin 4.
 
+-- 2) Criar a tabela tbEmpregado no bdatividade1 com as colunas cpf, nome, telefone, sexo e nroDep. Considere as seguintes restrições:
+-- A coluna cpf possui exatamente 11 caracteres, não aceita valores nulos e é chave primária. Use o tipo de dado character(11) para definir exatamente 11 caracteres;
+-- A coluna nome possui textos com até 40 caracteres e não aceita valores nulos;
+-- A coluna telefone possui exatamente 11 caracteres e aceita valores nulos;
+-- A coluna sexo possui exatamente 1 caractere e aceita valores nulos;
+-- A coluna nroDep possui números inteiros.
 
 create table tbEmpregado (
     cpf character(11) not null primary key,
@@ -9,8 +15,14 @@ create table tbEmpregado (
     nroDep integer not null
 );
 
--- 3) Exercício.
-
+-- 3) Criar  a  tabela tbDependente no  bdatividade1  com  as  colunas nome, cpfEmp, dataNasc, sexoe relacao. 
+-- Considere as seguintes restrições:
+-- A coluna nome possui textos com até 40 caracteres, não aceita valores nulos e é chave primária;
+-- A coluna cpfEmp possui exatamente 11 caracteres, não aceita valores nulos e é chave primária;
+-- A coluna dataNasc possui datas e não aceita valores nulos. Use o tipo de dado date;
+-- A coluna sexo possui exatamente 1 caractere e aceita valores nulos;
+-- A coluna relacao possui textos com até 10 caracterese não aceita valores nulos.
+-- Obs: Como a chave primária é dupla, então precisaremos definir as primary key separadamente na cláusula.
 
 create table tbDependente(
     nome character varying(40) not null,
@@ -21,7 +33,12 @@ create table tbDependente(
     primary key(nome, cpfEmp)
 );
 
--- 4) Exercício.
+-- 4) Criar a tabela tbDepartamento no bdatividade1 com as colunas nroDep, nome, telefone e cpfGer. Considere as seguintes restrições:
+
+-- A coluna nroDep possui valores inteiros, não aceita valores nulos e é chave primária;
+-- A coluna nome possui textos com até 30 caracteres e não aceita valores nulos;
+-- A coluna telefone possui exatamente 11 caracteres e aceita valores nulos;
+-- A coluna cpfGer possui exatamente 11 caracteres e não aceita valores nulos.
 
 create table tbDepartamento(
     nroDep integer not null primary key,
@@ -30,7 +47,11 @@ create table tbDepartamento(
     cpfGer character(11) not null
 );
 
--- 5) Exercício.
+-- 5) Criar a tabela tbProjeto no bdatividade1 com as colunas nroProj, nome, nroDep e custo. Considere as seguintes restrições:
+-- A coluna nroProj possui valores inteiros, não aceita valores nulos e é chave primária;
+-- A coluna nome possui textos com até 30 caracteres e não aceita valores nulos;
+-- A coluna nroDep possui valores inteiros e não aceita valores nulos;
+-- A coluna custo possui valores reais e aceita valores nulos. Use o tipo de dado double precision para que a coluna aceite valores reais.
 
 create table tbProjeto (
     nroProj integer not null primary key,
@@ -39,7 +60,12 @@ create table tbProjeto (
     custo double precision
 );
 
--- 6) Exercício.
+-- 6) Criar a tabela tbTrabalhaEm no bdatividade1 com as colunas cpfEmp, nroProj e nroHoras. Considere as seguintes restrições:
+-- A coluna nroProj possui valores inteiros, não aceita valores nulos e é chave primária;
+-- A coluna nome possui textos com até 30 caracteres e não aceita valores nulos;
+-- A coluna nroDep possui valores inteiros e não aceita valores nulos;
+-- A coluna custo possui valores reais e aceita valores nulos. Use o tipo de dado double precision para que a coluna aceite valores reais.
+-- Como a chave-primária é dupla, então precisaremos definir as primary key separadamente na cláusula, assim como fizemos no Exercício 3.
 
 create table tbTrabalhaEm (
     cpfEmp character(11) not null,
@@ -48,7 +74,16 @@ create table tbTrabalhaEm (
     primary key (cpfEmp, nroProj)
 );
 
--- 7) Exercício.
+-- 7) Fazer uma cláusula para inserir os seguintes registros na tbEmpregado:
+('123456789', 'José Carlos', NULL, 'M', 3),
+('987654321', 'Cleber Silva', '65432101', 'M', 1),
+('654321098', 'Antônio Carlos', '65431234', 'M', 5),
+('876543345', 'Mariana Souza', '67899876', 'F', 1),
+('765432123', 'Erico Faria', '23455432', 'M', 5),
+('345678901', 'Flavia Alves', '23456789', 'F', 2),
+('876543210', 'Lucia Helen', '65432178', 'F', 1),
+('234321123', 'Paulo Ramos', '56789000', 'M', 3),
+('987456432', 'Gabriela Novaes', '50987654', 'F', 4);
 
 insert into tbempregado(cpf,nome,telefone,sexo,nroDep)
 values
@@ -62,7 +97,13 @@ values
 ('234321123', 'Paulo Ramos', '56789000', 'M', 3),
 ('987456432', 'Gabriela Novaes', '50987654', 'F', 4);
 
--- 8) Exercício.
+-- 8) Fazer uma cláusula para inserir os seguintes registros na tbDependente:
+('José Augusto', '876543345', '1998-08-09', 'M', 'filho'),
+('Ana Claudia', '654321098', '2001-04-30', 'F', 'filho'),
+('Julia Maria', '654321098', '1993-05-16', 'F', 'filho'),
+('Augusto Pena', '987654321', '1996-01-31', 'M', 'neto'),
+('Carlos Eduardo', '345678901', '1989-12-17', 'M', 'filho'),
+('Ives', '876543345', '2005-01-20', 'F', 'filho');
 
 insert into tbdependente(nome,cpfEmp,dataNasc,sexo,relacao)
 values
@@ -73,7 +114,12 @@ values
 ('Carlos Eduardo', '345678901', '1989-12-17', 'M', 'filho'),
 ('Ives', '876543345', '2005-01-20', 'F', 'filho');
 
--- 9) Exercício.
+-- 9) Fazer uma cláusula para inserir os seguintes registros na tbDepartamento:
+(1, 'Administração', '98765432', '876543210'),
+(2, 'Estoque', '96543210', '345678901'),
+(3, 'Pesquisa', '56785678', '234321123'),
+(4, 'Manutenção', '45677654', '987456432'),
+(5, 'Produção', '5678901', '765432123');
 
 insert into tbdepartamento(nroDep,nome,telefone,cpfGer)
 values
@@ -83,7 +129,13 @@ values
 (4, 'Manutenção', '45677654', '987456432'),
 (5, 'Produção', '5678901', '765432123');
 
--- 10) Exercício.
+-- 10) Fazer uma cláusula para inserir os seguintes registros na tbProjeto:
+(1, 'Novas fontes de energia', 3, 300000),
+(2, 'RaioX', 1, 12000),
+(3, 'Melhorias', 5, 25000),
+(4, 'ABC', 3, 150000),
+(5, 'Otimização', 2, 17000),
+(6, 'Melhorias no trabalho', 1, 9000);
 
 insert into tbprojeto(nroProj,nome,nroDep,custo)
 values
@@ -94,7 +146,13 @@ values
 (5, 'Otimização', 2, 17000),
 (6, 'Melhorias no trabalho', 1, 9000);
 
--- 11) Exercício.
+-- 11) Fazer uma cláusula para inserir os seguintes registros na tbTrabalhaEm:
+('123456789', 6, 8),('987456432', 5, 10),
+('234321123', 4, 12), ('987654321', 3, 18),
+('345678901', 2, 12), ('876543210', 2, 10),
+('654321098', 1, 12), ('765432123', 2, 20),
+('876543345', 4, 18), ('234321123', 2, 14),
+('123456789', 2, 10), ('987654321', 5, 18);
 
 insert into tbTrabalhaEm(cpfEmp,nroProj,nroHoras)
 values
@@ -105,58 +163,61 @@ values
 ('876543345', 4, 18), ('234321123', 2, 14),
 ('123456789', 2, 10), ('987654321', 5, 18);
 
--- 12) Exercício.
+-- 12) Fazer uma consulta para listar todos os empregados que trabalham no departamento de número 5.
 
 select *
 from tbempregado
 where nrodep = 5;
 
--- 13) Exercício.
+-- 13) Fazer uma consulta para listar o nome e telefone de todos os empregados.
 
 select nome,telefone
 from tbempregado;
 
--- 14) Exercício.
+-- 14) Fazer uma consulta para listar o nome do gerente do departamento de número 5.
 
 select a.nome
 from tbempregado as a, tbdepartamento as b
 where a.cpf = b.cpfGer and
       b.nroDep = 5;
 
--- 15) Exercício.
+-- 15) Fazer uma consulta para listar o nome de todos os empregados e nome do departamento que eles trabalham.
 
 select a.nome, b.nome
 from tbempregado as a, tbdepartamento as b
 where a.nroDep = b.nroDep;
 
--- 16) Exercício.
+-- 16) Repita a consulta do Exercício 15 alterando o nome das colunas para Empregado e Departamento.
 
 select a.nome as "Empregado", b.nome as "Departamento"
 from tbempregado as a, tbdepartamento as b
 where a.nroDep = b.nroDep;
 
--- 17) Exercício.
+-- 17) Fazer uma consulta para listar o nome e telefone dos empregados que trabalham no departamento ‘Administração’.
+-- Dica: como o PostgreSQL é sensível ao case da letra (maiúsculo e minúsculo), então a letra A de Administração precisa ser maiúsculo.
 
 select a.nome, a.telefone
 from tbempregado as a, tbdepartamento as b
 where a.nroDep = b.nroDep and
       b.nome = 'Administração';
 
--- 18) Exercício.
+-- 18) Fazer uma consulta para listar os dependentes do
+empregado ‘Antônio Carlos’.
 
 select b.*
 from tbempregado as a, tbdependente as b
 where a.cpf = b.cpfemp and
       a.nome = 'Antônio Carlos';
       
--- 19) Exercício.
+-- 19) Fazer uma consulta para listar o nome dos empregados e dependentes cuja a relação de dependência seja neto.
 
 select a.nome, b.nome
 from tbempregado as a, tbdependente as b
 where a.cpf = b.cpfemp and
       b.relacao = 'neto';
 
--- 20) Exercício.
+-- 20) Fazer uma consulta para listar o nome dos empregados e dependentes cuja a relação de dependência seja neto. 
+-- Adicione também o nome do departamento que o empregado trabalha.
 
 select a.nome, b.nome, c.nome
 from tbempregado as a, tbdependente as b, tbdepartamento as c
@@ -164,7 +225,7 @@ where a.cpf = b.cpfemp and
       a.nroDep = c.nroDep and
       b.relacao = 'neto';
       
--- 21) Exercício.
+-- 21) Fazer uma consulta para listar os nomes dos empregados que trabalham no projeto ‘RaioX’.
 
 select a.nome
 from tbempregado as a, tbtrabalhaem as b, tbprojeto as c
@@ -172,7 +233,9 @@ where a.cpf = b.cpfEmp and
       b.nroProj = c.nroProj and
       c.nome = 'RaioX';
       
--- 22) Exercício.
+-- 22) Fazer uma consulta para listar os nomes dos dependentes dos empregados
+-- que trabalham no departamento ‘Estoque’. Incluir também uma coluna com o nome
+-- do empregado e renomear as colunas.
 
 select a.nome as "Empregado", b.nome as "Dependente"
 from tbempregado as a, tbdependente as b, tbdepartamento as c
@@ -180,7 +243,7 @@ where a.cpf = b.cpfemp and
       a.nroDep = c.nroDep and
       c.nome = 'Estoque';
       
--- 23) Exercício.
+-- 23) Fazer uma consulta para listar o nome dos empregados que trabalham mais de 10 horas no projeto ‘RaioX’.
 
 select a.nome
 from tbempregado as a, tbtrabalhaem as b, tbprojeto as c
@@ -192,14 +255,14 @@ where a.cpf = b.cpfEmp
       and
       b.nroHoras > 10;
 
--- 24) Exercício.
+-- 24) Fazer uma consulta para listar todos os projetos do departamento ‘Pesquisa’.
 
 select b.*
 from tbdepartamento as a, tbprojeto as b
 where a.nroDep = b.nroDep and
       a.nome = 'Pesquisa';
 
--- 25) Exercício.
+-- 25) Fazer uma consulta para listar todos os projetos que o empregado ‘Cleber Silva’ trabalha que possui custo acima de vinte mil reais.
 
 select c.*
 from tbempregado as a, tbtrabalhaem as b, tbprojeto as c
@@ -211,7 +274,9 @@ where a.cpf = b.cpfEmp
       and
       c.custo > 20000;
 
--- 26) Exercício.
+-- 26) Fazer uma consulta para listar os nomes dos departamentos que cederam
+-- empregados para o projeto ‘RaioX’. Evitar nomes repetidos e ordenar em ordem
+-- decrescente.
 
 select distinct d.nome
 from tbempregado as a, tbtrabalhaem as b,
@@ -225,7 +290,7 @@ where a.cpf = b.cpfEmp
       c.nome = 'RaioX'
 order by d.nome desc;
 
--- 27) Exercício.
+-- 27) Fazer uma consulta para listar todos os empregados que trabalham no mesmo departamento que a ‘Lucia Helen’.
 
 select b.*
 from tbempregado as a, tbempregado as b
