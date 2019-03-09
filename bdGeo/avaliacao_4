@@ -1,1 +1,38 @@
 -- 1) Fazer uma consulta para listar o nome da propriedade e o nome do município. (Use 'as' to rename the columns)
+
+select a.nome, b.nome
+from tbpropriedade as a, tbmunicipio as b
+where a.idmunicipio = b.idmunicipio
+order by a.nome asc;
+
+-- 2) Alterar a consulta do Exercício 1 para listar somente as propriedades com área maior
+que 100.
+
+select a.nome, b.nome
+from tbpropriedade as a, tbmunicipio as b
+where a.idmunicipio = b.idmunicipio and a.area > 100
+order by a.nome asc;
+
+-- 3) Fazer uma consulta para listar o nome do proprietário e da sua propriedade.
+
+select b.nome, c.nome
+from tbpessoaporpropriedade as a, tbpessoa as b, tbpropriedade as c
+where a.idpessoa = b.idpessoa and a.idpropriedade = c.idpropriedade
+order by b.nome, c.nome;
+
+-- 4) Fazer uma consulta para listar o nome da propriedade e os tipos de construções em
+cada uma.
+
+select a.nome, c.nome
+from tbpropriedade as a, tbconstrucao as b, tbtipoconstrucao as c
+where a.idpropriedade = b.idpropriedade and b.idtipoconstrucao = c.idtipoconstrucao
+order by a.nome, c.nome;
+
+-- 5) Alterar a consulta do Exercício 4 para listar apenas as propriedades que possuem Casa. Renomeie
+a coluna para Propriedade.
+
+select a.nome as "Propriedade"
+from tbpropriedade as a, tbconstrucao as b, tbtipoconstrucao as c
+where a.idpropriedade = b.idpropriedade and b.idtipoconstrucao = c.idtipoconstrucao and c.nome like 'Casa'
+order by a.nome;
+
