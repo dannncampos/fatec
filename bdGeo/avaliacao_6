@@ -1,0 +1,107 @@
+-- 1 – Fazer uma consulta para listar o nome do produto e da sua categoria.
+-- use as duas tabelas no termo from da cláusula select.
+
+select a.nome, b.nome
+from tbproduto as a, tbcategoria as b
+where a.idcategoria=b.idcategoria;
+
+-- 2 – Alterar a cláusula do Exercício 1 para listar somente os produtos que são da categoria alimentação.
+
+select a.nome, b.nome
+from tbproduto as a, tbcategoria as b
+where a.idcategoria=b.idcategoria and b.nome like 'alimentação';
+
+-- 3 – Alterar a cláusula do Exercício 2 para listar somente os produtos que são da categoria alimentação que possuem valor acima de 5 reais.
+
+select a.nome, b.nome, a.valor
+from tbproduto as a, tbcategoria as b
+where a.idcategoria=b.idcategoria and b.nome like 'alimentação' and a.valor >5;
+
+-- 4 – Alterar a cláusula do Exercício 2 para listar somente os produtos que são da categoria alimentação que possuem valor entre 5 e 10 reais.
+
+select a.nome, b.nome, a.valor
+from tbproduto as a, tbcategoria as b
+where a.idcategoria=b.idcategoria and b.nome like 'alimentação' and a.valor >5 and a.valor <10;
+
+-- 5 – Fazer uma consulta para listar os produtos que são das categorias higiene ou higiene pessoal.
+-- Observação: você não pode usar os filtros idCategoria = 1, tem de ser nome = ‘higiene’.
+-- use o operador lógico or e agrupe os termos com parênteses.
+
+select a.nome, b.nome
+from tbproduto as a, tbcategoria as b
+where a.idcategoria=b.idcategoria and (b.nome = 'higiene' or b.nome = 'higiene pessoal')
+order by a.nome;
+
+-- 6 – Fazer uma consulta para listar os nomes de produtos que finalizam pela letra o.
+-- use o operador ilike e o caractere especial %.
+
+select a.nome
+from tbproduto as a
+where a.nome ilike '%o'
+order by a.nome;
+
+-- 7 – Fazer uma consulta para listar os nomes de produtos que possuem a letra a na 2ª posição.
+-- use o operador ilike e o caracteres especiais _ e %.
+
+select a.nome
+from tbproduto as a
+where a.nome ilike '_a%'
+order by a.nome;
+
+-- 8 – Fazer uma consulta para somar todos registros da coluna valor.
+-- Dica: use a função agrupadora sum.
+
+select sum(a.valor) as "Total"
+from tbproduto as a;
+
+-- 9 – Fazer uma consulta para somar os registros da coluna valor por idcategoria. Apresente o resultado ordenado pelo Total.
+-- use a função agrupadora sum e os termos group by e order by.
+
+select b.nome, sum(a.valor)
+from tbproduto as a, tbcategoria as b
+where a.idcategoria = b.idcategoria
+group by b.nome
+order by sum(a.valor);
+
+-- 10 – Alterar a consulta do Exercício 9 para apresentar também a quantidade de registros por idcategoria. Apresente o resultado
+ordenado pela Quantidade.
+-- use as funções agrupadoras sum e count, e os termos group by e order by.
+
+select b.nome, count(*) as "Quantidade", sum(a.valor) as "Total"
+from tbproduto as a, tbcategoria as b
+where a.idcategoria = b.idcategoria
+group by b.nome
+order by sum(a.valor);
+
+-- 11 – Alterar a consulta do Exercício 10 para apresentar também o nome da categoria. Apresente o resultado ordenado pela Quantidade.
+-- incluir a tabela tbcategoria e fazer a ligação das tabelas no termo where. 
+-- No termo group by é preciso usar a coluna nome da tbcategoria.
+
+select b.nome as "Categoria", count(*) as "Quantidade", sum(a.valor) as "Total"
+from tbproduto as a, tbcategoria as b
+where a.idcategoria = b.idcategoria
+group by b.nome
+order by sum(a.valor);
+
+-- 12 – Fazer uma consulta para apresentar o valor de produto mais barato (menor valor) dentro de cada categoria. Apresente o
+-- resultado ordenado pelo nome.
+-- use a função agrupadora min.
+
+select b.nome, min(a.valor)
+from tbproduto as a, tbcategoria as b
+where a.idcategoria = b.idcategoria
+group by b.nome
+order by b.nome;
+
+
+
+
+
+
+
+
+
+
+
+
+
