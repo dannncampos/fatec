@@ -1,0 +1,48 @@
+-- 1 – Fazer uma consulta para listar a quantidade de municípios por estado. Renomear as colunas e ordenar o resultado pelo quantidade de municípios.
+-- • Agrupe pela coluna uf;
+-- • Ordene pela coluna count(*);
+-- • Use o operador as para renomear as colunas.
+
+select a.uf as "Estado", count(*) as "Quant. Municípios"
+from tbmunicipio as a
+group by a.uf
+order by count(*);
+
+-- 2 – Fazer uma consulta para listar os dados da propriedade com a maior área.
+-- • Ordene o resultado pela coluna area;
+-- • Use o termo limit para pegar só a 1ª linha do resultado.
+
+select *
+from tbpropriedade as a
+order by a.area desc
+limit 1;
+
+-- 3 – Fazer uma consulta para listar a quantidade de propriedades por município. Renomear as colunas e ordenar o resultado pelo nome do município: 
+-- • Use as tabelas tbMunicipio e tbPropriedade;
+-- • Agrupe pelo nome do município.
+
+select b.nome as "Município", count(*) as "Quant. de propriedades"
+from tbpropriedade as a, tbmunicipio as b
+where a.idmunicipio = b.idmunicipio
+group by b.nome
+order by b.nome;
+
+-- 4 – Fazer uma consulta para contar a quantidade de proprietários por propriedade. Renomear as colunas e ordenar o resultado pelo nome da propriedade.
+-- • Use as tabelas tbPropriedade e tbPessoaPorPropriedade;
+-- • Agrupe pelo nome da propriedade.
+
+select a.nome as "Propriedade", count(*) as "Quant. proprietários"
+from tbpropriedade as a, tbpessoaporpropriedade as b
+where a.idpropriedade = b.idpropriedade
+group by a.nome
+order by a.nome;
+
+-- 5 – Alterar a consulta do Exercício 4 para listar apenas as propriedades que possuem mais de 1 proprietário. 
+-- • Adicione o termo having na cláusula.
+
+select a.nome as "Propriedade", count(*) as "Quant. proprietários"
+from tbpropriedade as a, tbpessoaporpropriedade as b
+where a.idpropriedade = b.idpropriedade
+group by a.nome
+having count(nome) >1
+order by a.nome;
