@@ -1,3 +1,41 @@
+-- Cláusulas para excluir as tabelas se elas existirem
+drop table if exists tbCategoria;
+drop table if exists tbProduto;
+
+-- Cláusulas para criar as tabelas
+create table tbCategoria(
+    idCategoria serial not null primary key,
+    nome varchar (50) not null
+);
+
+create table tbProduto(
+    idProduto serial not null primary key,
+    nome varchar(50) not null,
+    valor double precision not null,
+    idCategoria integer null
+);
+
+-- Cláusulas para preencher as tabelas
+insert into tbCategoria(idCategoria, nome)
+values (1,'higiene pessoal'),
+       (2,'alimentação'),
+       (3,'higiene');
+
+-- Não precisamos fornecer a coluna idProduto, porque ela é do tipo serial, o valor é automaticamente incrementado pelo SGBD
+insert into tbProduto(nome, valor,idCategoria)
+values
+  ('arroz',12.54,2),
+  ('feijão',3.99,2),
+  ('sabão líquido',1.42,3),
+  ('óleo de soja',4.34,2),
+  ('macarrão',5.75,2),
+  ('desodorante',11.99,1),
+  ('bolacha',3.5,2),
+  ('amaciante',10.2,3),
+  ('pasta de dente',8.5,1),
+  ('açúcar',2.8,2),
+  ('sabonete',1.39,1);
+
 -- 1 – Fazer uma consulta para listar o nome do produto e da sua categoria.
 -- use as duas tabelas no termo from da cláusula select.
 
