@@ -1,0 +1,98 @@
+-- Cláusulas para excluir as tabelas se elas existirem
+drop table if exists tbCurso;
+drop table if exists tbUnidade;
+
+-- Cláusulas para criar as tabelas
+create table tbUnidade (
+  idUnidade serial not null primary key,
+  nome character varying(80) NOT NULL
+);
+
+create table tbCurso (
+  idCurso serial not null primary key,
+  idUnidade integer not null references tbUnidade(idUnidade),
+  nome character varying(50) NOT NULL,
+  feminino integer NOT NULL,
+  masculino integer NOT NULL
+);
+
+
+-- Cláusulas para preencher as tabelas
+insert into tbUnidade(nome)
+values
+('Jacareí'),
+('São José dos Campos'),
+('Mogi das Cruzes'),
+('Taubaté'),
+('Guaratinguetá');
+
+insert into tbCurso(idUnidade,nome,feminino,masculino)
+values
+(1,'Geoprocessamento',110,190),
+(1,'Meio Ambiente',140,80),
+(2,'Logística',120,120),
+(2,'Análise e Desenvolvimento de Sistemas',70,250),
+(2,'Banco de dados',100,180),
+(2,'Gestão Empresarial',160,80),
+(3,'Gestão Empresarial',120,70),
+(3,'Análise e Desenvolvimento de Sistemas',70,180),
+(3,'Logística',150,100),
+(4,'Eletrônica automotiva',20,170),
+(4,'Análise e Desenvolvimento de Sistemas',80,150),
+(5,'Análise e Desenvolvimento de Sistemas',100,160),
+(5,'Gestão da Tecnologia da Informação',90,110),
+(5,'Logística',120,90),
+(5,'Gestão Financeira',140,40),
+(5,'Gestão Comercial',150,60);
+
+-- 1 – Fazer uma consulta para listar a quantidade de cursos por unidade. Renomear as colunas e ordenar o resultado pela quantidade.
+
+-- Use as tabelas tbUnidade e tbCurso;
+-- • Agrupe pela coluna nome;
+-- • Ordene pela coluna count(*);
+-- • Use o operador as para renomear as colunas.
+
+select b.nome as "Unidade", count(*) as "Quantidade de cursos"
+from tbcurso as a, tbunidade as b
+where a.idunidade = b.idunidade
+group by b.nome
+order by count(*);
+
+-- 2 – Fazer uma consulta para listar o total de alunos de cada sexo por unidade. 
+-- Renomear as colunas e ordenar o resultado pelo nome da unidade. 
+-- • Use as tabelas tbUnidade e tbCurso;
+-- • Agrupe pela coluna nome;
+-- • Use a função sum.
+
+select b.nome as "Unidade", sum(a.feminino) as "F", sum(a.masculino) as "M"
+from tbcurso as a, tbunidade as b
+where a.idunidade = b.idunidade
+group by b.nome
+order by b.nome;
+
+-- 3 - Fazer uma consulta para listar o total de alunos por unidade. Renomear as colunas e ordenar o resultado pela coluna total.
+-- • Altere a cláusula do Exercício 2 fazendo a soma (operador de +) das duas colunas de totais.
+
+select b.nome as "Unidade", sum(a.feminino)+sum(a.masculino) as "Total de alunos"
+from tbcurso as a, tbunidade as b
+where a.idunidade = b.idunidade
+group by b.nome
+order by "Total de alunos";
+
+-- 4 – Fazer uma consulta para listar a taxa de mulheres por unidade. 
+-- Renomear as colunas e ordenar o resultado pela coluna da taxa de mulheres.
+-- • Altere a cláusula do Exercício 3 e faça a operação de divisão;
+-- • Será necessário converter (cast) um dos termos da divisão para numeric, pois a divisão de dois inteiros também é um inteiro.
+
+select b.nome as "Unidade", (sum(a.feminino::numeric) / (sum(a.feminino)+sum(a.masculino))::numeric)::numeric(3,2) as "Taxa de mulheres"
+from tbcurso as a, tbunidade as b
+where a.idunidade = b.idunidade
+group by b.nome;
+
+-- 5 – Alterar a consulta do Exercício 5 para listar a porcentagem e mulheres por unidade.
+-- • Multiplique o resultado do Exercício 4 por 100.
+
+select b.nome as "Unidade", (sum(a.feminino::numeric) / (sum(a.feminino)+sum(a.masculino))::numeric)::numeric(3,2)*100 as "% de mulheres"
+from tbcurso as a, tbunidade as b
+where a.idunidade = b.idunidade
+group by b.nome;
