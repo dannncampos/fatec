@@ -1,0 +1,149 @@
+-- Excluir as tabelas se elas existirem
+drop table if exists tbProdutoPorVenda;
+drop table if exists tbProduto;
+drop table if exists tbVenda;
+drop table if exists tbCliente;
+drop table if exists tbTipoProduto;
+
+-- Criar as tabelas
+CREATE TABLE tbTipoProduto (
+  idTipoProduto serial NOT NULL primary key,
+  nome VARCHAR(80) NOT NULL
+);
+
+CREATE TABLE tbCliente (
+  idCliente serial NOT NULL primary key,
+  nome VARCHAR(80) NOT NULL
+);
+
+CREATE TABLE tbVenda (
+  idVenda serial NOT NULL primary key,
+  idCliente INTEGER NOT NULL,
+  dataVenda DATE NOT NULL
+);
+
+CREATE TABLE tbProduto (
+  idProduto serial NOT NULL primary key,
+  idTipoProduto INTEGER NOT NULL references tbTipoProduto(idTipoProduto),
+  nome VARCHAR(50) NOT NULL,
+  valor FLOAT NOT NULL
+);
+
+CREATE TABLE tbProdutoPorVenda (
+  idProduto INTEGER NOT NULL references tbProduto(idProduto),
+  idVenda INTEGER NOT NULL references tbVenda(idVenda),
+  quantidade INTEGER NOT NULL
+);
+
+
+-- Cláusulas para preencher as tabelas
+insert into tbTipoProduto(idTipoProduto,nome)
+values
+(1,'Mercearia'),
+(2,'Limpeza'),
+(3,'Higiene pessoal'),
+(4,'Perecíveis'),
+(5,'Bebidas');
+
+insert into tbProduto(idProduto,idTipoProduto,nome,valor)
+values
+(1,1,'Açúcar',2.85),
+(2,1,'Macarrão',5.65),
+(3,1,'Feijão',7.15),
+(4,1,'Arroz',12.1),
+(5,1,'Café',4.5),
+(6,1,'Chocolate',3.5),
+(7,2,'Sabão em pó',14.2),
+(8,2,'Sabão em barra',1.8),
+(9,2,'Detergente',3.5),
+(10,2,'Desinfetante',4.3),
+(11,3,'Desodorante',9.9),
+(12,3,'Fio dental',8.9),
+(13,3,'Shampoo',14.5),
+(14,3,'Creme dental',3.89),
+(15,3,'Sabonete',2.1),
+(16,4,'Leite',3.85),
+(17,4,'Tomate',3.4),
+(18,4,'Carne',14.8),
+(19,4,'Alface',2);
+
+insert into tbCliente(idCliente,nome)
+values
+(1,'Luiz'),
+(2,'Almeida'),
+(3,'Ana Maria'),
+(4,'Joana'),
+(5,'Lucas'),
+(6,'Bosco');
+
+insert into tbVenda(idVenda,idCliente,dataVenda)
+values
+(1,1,'2018-01-09'),
+(2,1,'2018-03-02'),
+(3,1,'2018-04-12'),
+(4,3,'2018-02-21'),
+(5,3,'2018-03-12'),
+(6,4,'2018-04-01'),
+(7,6,'2018-01-31'),
+(8,6,'2018-02-07'),
+(9,6,'2018-02-27');
+
+insert into tbProdutoPorVenda(idProduto,idVenda,quantidade)
+values
+(4,1,2),
+(11,1,3),
+(17,1,5),
+(13,2,2),
+(16,2,1),
+(18,3,4),
+(2,4,1),
+(3,4,2),
+(4,4,1),
+(6,4,4),
+(5,4,1),
+(9,5,1),
+(8,6,5),
+(12,6,2),
+(3,7,2),
+(9,7,3),
+(14,7,1),
+(5,8,2),
+(1,9,1),
+(18,9,1);
+
+-- 1 – Fazer uma consulta para listar os produtos que não aparecem na tbprodutoporvenda. 
+-- Dica: use left join e null no termo where.
+
+select *
+from tbproduto as a left join tbprodutoporvenda as b
+on a.idproduto = b.idproduto
+where b.idproduto is null;
+
+-- 2 – Apresente o resultado do Exercício 1 ordenado pelo nome.
+
+select *
+from tbproduto as a left join tbprodutoporvenda as b
+on a.idproduto = b.idproduto
+where b.idproduto is null
+order by a.nome;
+
+-- 3 – Altere a cláusula do Exercício 1 para obter o valor médio dos produtos que nunca foram vendidos.
+
+select avg(a.valor)
+from tbproduto as a left join tbprodutoporvenda as b
+on a.idproduto = b.idproduto
+where b.idproduto is null;
+
+-- 4 – Altere a cláusula do Exercício 1 para obter a quantidade de produtos que nunca foram vendidos.
+
+select count(a.valor)
+from tbproduto as a left join tbprodutoporvenda as b
+on a.idproduto = b.idproduto
+where b.idproduto is null;
+
+-- 5 – Fazer uma consulta para listar os tipos de produtos que não existem na tbproduto.
+
+select a.nome, a.idtipoproduto
+from tbtipoproduto as a left join tbproduto as b
+on a.idtipoproduto = b.idtipoproduto
+where b.idtipoproduto is null;
