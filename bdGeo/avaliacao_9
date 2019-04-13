@@ -1,0 +1,37 @@
+-- 1 – Fazer uma consulta para listar o polígono que possui a maior área.
+-- Dicas: Use a função ST_Area(geom) e ST_Perimeter(geom); Use order by e limit.
+
+select gid, cor, ST_Area(geom), ST_Perimeter(geom)
+from tbClasse
+order by ST_Area(geom) desc
+limit 1
+
+-- 2 – Fazer uma consulta para listar a área por cor. 
+-- Dicas: Agrupe pela coluna cor; Use a função sum.
+
+select cor, sum(ST_Area(geom)) as "Área"
+from tbClasse
+group by cor
+
+-- 3 – Fazer uma consulta para listar o centroide do polígono.
+-- Dica: Use a função ST_Centroid(geom) e a função ST_asText(geom).
+
+select gid, cor, ST_asText(ST_Centroid(geom))
+from tbClasse
+
+-- 4 – Fazer uma consulta para listar os vizinhos do polígono 5. 
+-- Dicas: Use a função ST_Touches(geom,geom) no termo where;
+-- Como a função ST_Touches pede duas geometrias, então teremos de
+-- usar a tbmapa duas vezes no termo from.
+
+select b.gid, b.cor
+from tbClasse as a, tbClasse as b
+where ST_Touches(a.geom, b.geom) = True and a.gid = 5
+
+-- 5 – Fazer uma consulta para listar a quantidade de vizinhos por polígono. 
+-- Dica: Inclua o termo group by na cláusula do Exercício 4.
+
+select b.gid, count(ST_Touches(a.geom, b.geom)) as "Quantidade de vizinhos"
+from tbClasse as a, tbClasse as b
+where ST_Touches(a.geom, b.geom) = True
+group by b.gid
