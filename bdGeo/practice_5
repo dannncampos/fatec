@@ -1,0 +1,161 @@
+-- Cláusula para excluir a tabela se ela existir
+DROP TABLE IF EXISTS tbClasse;
+
+-- Cláusula para criar a tabela
+CREATE TABLE tbClasse (
+  gid SERIAL NOT NULL PRIMARY KEY,
+  cor CHARACTER VARYING(12) NOT NULL,
+  geom geometry(Geometry,4326) NOT NULL
+);
+
+-- Cláusula para preencher a tabela
+insert into tbClasse(gid,cor,geom)
+values
+(1,'vermelho',st_geomfromtext('Polygon((1 1, 3 1, 3 3, 1 3, 1 1))',4326)),
+(2,'azul',st_geomfromtext('Polygon((8 2, 12 2, 12 11, 8 11, 8 2))',4326)),
+(3,'laranja',st_geomfromtext('Polygon((4 8, 14 8, 14 10, 4 10, 4 8))',4326)),
+(4,'amarelo',st_geomfromtext('Polygon((8.5 8.5, 10.5 8.5, 10.5 9.5, 8.5 9.5, 8.5 8.5))',4326)),
+(5,'vermelho',st_geomfromtext('Polygon((4 6, 10 6, 10 8, 4 8, 4 6))',4326)),
+(6,'azul',st_geomfromtext('Polygon((16 2, 18 2, 18 10, 16 10, 16 2))',4326)),
+(7,'verde',st_geomfromtext('Polygon((10 6, 20 6, 20 8, 10 8, 10 6))',4326)),
+(8,'azul',st_geomfromtext('Polygon((6 4, 9 4, 9 6, 6 6, 6 4))',4326)),
+(9,'vermelho',st_geomfromtext('Polygon((9 3, 11 3, 11 6, 9 6, 9 3))',4326)),
+(10,'vermelho',st_geomfromtext('Point(7 9)',4326)),
+(11,'azul',st_geomfromtext('Point(17 7)',4326)),
+(12,'azul',st_geomfromtext('Point(14 1)',4326)),
+(13,'amarelo',st_geomfromtext('Point(2 2)',4326)),
+(14,'verde',st_geomfromtext('Point(9 7)',4326)),
+(15,'vermelho',st_geomfromtext('Point(15 10)',4326)),
+(16,'verde',st_geomfromtext('LineString(1 10, 15 3)',4326)),
+(17,'vermelho',st_geomfromtext('LineString(2 5, 6 11)',4326)),
+(18,'amarelo',st_geomfromtext('LineString(13 9, 20 1)',4326)),
+(19,'vermelho',st_geomfromtext('LineString(12 3, 17 9)',4326));
+
+-- 1) Fazer uma consulta para listar a área e o perímetro de cada geometria.
+-- Dica: use as funções ST_Area(geom) e ST_Perimeter(geom).
+-- http://postgis.net/docs/ST_Area.html e http://postgis.net/docs/ST_Perimeter.html
+
+
+
+
+-- 4) Fazer uma consulta para listar os centroides dos polígonos.
+-- Dica: use a função ST_Centroid(geom) para obter o centro da geometria e,
+-- a função ST_GeometryType(geom) para filtrar somente as geometrias que são do tipo ST_Polygon. 
+-- Use ainda a função ST_AsText(geom) para mostrar a geometria como texto.
+-- http://postgis.net/docs/ST_Centroid.html
+
+select gid, cor,  ST_AsText(ST_Centroid(geom)) as "Centro"
+from tbClasse
+where ST_GeometryType(geom) = 'ST_Polygon';
+
+-- 5 – Fazer uma consulta para listar as geometrias que fazem interseção com o registro de gid igual a 18.
+-- Dica: use a função ST_Intersects(geom, geom) para checar as interseções. 
+-- Também será necessário incluir a tbClasse duas vezes na cláusula.
+
+select b.gid, b.cor
+from tbClasse as a, tbClasse as b
+where ST_Intersects(a.geom, b.geom) = True and a.gid != b.gid and a.gid = 18
+
+-- 6) Fazer uma consulta para listar as geometrias vizinhas da geometria do registro que possui gid igual a 9.
+-- Dica: use a função ST_Touches(geom,geom) para checar o toque. 
+-- Também será necessário incluir a tbClasse duas vezes na cláusula.
+
+select b.gid, b.cor
+from tbClasse as a, tbClasse as b
+where ST_Touches(a.geom, b.geom) = True and a.gid = 9
+
+-- 7) Fazer uma consulta para listar a interseção entre as geometrias 9 e 16.
+-- Dica: use a função ST_Intersection(geom, geom) para obter a geometria
+-- resultante da interseção e a função ST_AsText(geom) para mostrar a geometria
+-- como texto. Também será necessário incluir a tbClasse duas vezes na cláusula.
+-- http://postgis.net/docs/ST_Intersection.html
+
+select ST_AsText(ST_Intersection(a.geom, b.geom)) as "Linha"
+from tbClasse as a, tbClasse as b
+where a.gid = 9 and b.gid = 16
+
+-- 8) Alterar a cláusula do Exercício 7 para listar o comprimento da interseção.
+-- Dica: use a função ST_Length(geom) para obter o comprimento.
+
+select ST_Length(ST_Intersection(a.geom, b.geom)) as "Comprimento"
+from tbClasse as a, tbClasse as b
+where a.gid = 9 and b.gid = 16
+
+-- 9) Fazer uma consulta para listar a distância entre as geometrias 12 e 13.
+-- Dica: use a função ST_Distance(geom,geom) para obter a distância.
+-- http://postgis.net/docs/ST_Distance.html
+
+select ST_Distance(a.geom, b.geom) as "Distância"
+from tbClasse as a, tbClasse as b
+where a.gid = 12 and b.gid = 13
+
+-- 10 – Fazer uma consulta para listar a distância entre a geometria 13 e cada geometria do tipo ST_Point.
+
+select b.gid, b.cor, ST_Distance(a.geom, b.geom) as "Distância"
+from tbClasse as a, tbClasse as b
+where a.gid = 13 and ST_GeometryType(b.geom) = 'ST_Point'
+
+-- 11 – Alterar a cláusula do Exercício 10 para listar somente o ponto mais distante da geometria 13.
+-- Dica: use os termos order by e limit na cláusula do Exercício 10.
+
+select b.gid, b.cor, ST_Distance(a.geom, b.geom) as "Distância"
+from tbClasse as a, tbClasse as b
+where a.gid = 13 and ST_GeometryType(b.geom) = 'ST_Point'
+order by ST_Distance(a.geom, b.geom) desc
+limit 1
+
+-- 12) Alterar a cláusula do Exercício 10 para listar o somatório das distâncias.
+-- Dica: use a função sum.
+
+select sum(ST_Distance(a.geom, b.geom)) as "Distância total"
+from tbClasse as a, tbClasse as b
+where a.gid = 13 and ST_GeometryType(b.geom) = 'ST_Point'
+group by a.geom
+
+-- 13 – Fazer uma consulta para listar as geometrias que cobrem a geometria 4.
+-- Dica: use a função ST_CoveredBy(geom,geom) ou ST_Covers(geom,geom) para checar a cobertura.
+
+select b.gid, b.cor
+from tbClasse as a, tbClasse as b
+where ST_CoveredBy(a.geom, b.geom) = True and a.gid=4
+
+-- 14) Fazer uma consulta para listar as geometrias que cruzam a geometria 2.
+-- Dica: use a função ST_Crosses(geom,geom).
+
+select b.gid, b.cor
+from tbClasse as a, tbClasse as b
+where ST_Crosses(a.geom, b.geom) = True and a.gid=2
+
+-- 15) Fazer uma consulta para listar a quantidade de vizinhos por geometria.
+-- Dica: use a função ST_Touches(geom,geom).
+
+select b.gid, b.cor, count(b.gid) as "Quantidade de vizinhos"
+from tbClasse as a, tbClasse as b
+where ST_Touches(a.geom, b.geom) = True
+group by b.gid
+
+
+-- 16 – Alterar a cláusula do Exercício 15 para listar apenas a geometria que possui o maior número de vizinhos.
+-- Dica: use o termo limit e ordene pela quantidade de vizinhos
+
+select b.gid, b.cor, count(b.gid) as "Quantidade de vizinhos"
+from tbClasse as a, tbClasse as b
+where ST_Touches(a.geom, b.geom) = True
+group by b.gid
+order by count(b.gid) desc
+limit 1
+
+-- 17 – Fazer uma consulta para listar a união das geometrias 5 e 7.
+-- Dica: use a função ST_Union(geom,geom).
+-- http://postgis.net/docs/ST_Union.html
+
+select ST_astext(ST_Union(a.geom, b.geom))
+from tbClasse as a, tbClasse as b
+where a.gid = 5 and b.gid = 7
+
+-- 18 – Fazer uma consulta para listar a diferença entre as geometrias 6 e 7.
+-- Dica: use a função ST_Difference(geom,geom), http://postgis.net/docs/ST_Difference.html
+
+select ST_astext(ST_Difference(a.geom, b.geom))
+from tbClasse as a, tbClasse as b
+where a.gid = 6 and b.gid = 7
