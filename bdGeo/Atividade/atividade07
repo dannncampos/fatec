@@ -1,0 +1,72 @@
+-- Exercício 1
+-- Fazer uma consulta para listar os municípios vizinho de Jacareí na tbmunicipio.
+select b.*
+from tbmunicipio as a, tbmunicipio as b
+where a.municipio = 'Jacareí' and ST_Touches(a.geom,b.geom);
+
+
+-- Exercício 2
+-- Alterar a consulta do Exercício 1 para retornar apenas uma geometria que representa a soma das geometrias.
+select ST_Union(b.geom) as "geom"
+from tbmunicipio as a, tbmunicipio as b
+where a.municipio = 'Jacareí' and ST_Touches(a.geom,b.geom);
+
+
+-- Exercício 3
+-- Alterar a consulta do Exercício 1 para retornar o nome e a área dos municípios vizinhos de Jacareí.
+select b.municipio, ST_Area(b.geom) as "area"
+from tbmunicipio as a, tbmunicipio as b
+where a.municipio = 'Jacareí' and ST_Touches(a.geom,b.geom);
+
+
+-- Exercício 4
+-- Alterar a consulta do Exercício 3 para retornar apenas o nome e a área do município vizinho de Jacareí que possui a maior área.
+select b.municipio, ST_Area(b.geom) as "area"
+from tbmunicipio as a, tbmunicipio as b
+where a.municipio = 'Jacareí' and ST_Touches(a.geom,b.geom)
+order by "area" desc
+limit 1;
+
+
+-- Exercício 5
+-- Alterar a consulta do Exercício 3 para retornar a área em metros usando as projeções:
+-- SIRGAS 2000 / UTM zona 23S, EPSG:31983 e
+-- SAD69 / UTM zona 23S, EPSG:29193.
+select b.municipio, ST_Area(ST_Transform(b.geom,31983)) as "area em SIRGAS", ST_Area(ST_Transform(b.geom,29193)) as "area em SAD69"
+from tbmunicipio as a, tbmunicipio as b
+where a.municipio = 'Jacareí' and ST_Touches(a.geom,b.geom);
+
+
+-- Exercício 6
+-- Alterar a consulta do Exercício 5 para retornar as áreas em Km2.
+select b.municipio, (ST_Area(ST_Transform(b.geom,31983))/1000^2)::numeric(10,2) as "area em SIRGAS", (ST_Area(ST_Transform(b.geom,29193))/1000^2)::numeric(10,2) as "area em SAD69"
+from tbmunicipio as a, tbmunicipio as b
+where a.municipio = 'Jacareí' and ST_Touches(a.geom,b.geom);
+
+
+-- Exercício 7
+-- Fazer uma consulta para listar as cidades que estão até 100 km de Brasília/DF na tbcidade.
+select b.* 
+from tbcidade as a, tbcidade as b 
+where a.nome = 'Brasília/DF' and st_distance(a.geom, b.geom) < 0.9;
+
+
+-- Exercício 8
+-- Fazer uma consulta para obter a curva mínima que delimita os pontos obtidos na cláusula do Exercício 7.
+select ST_ConvexHull(st_union(b.geom)) as geom
+from tbcidade as a, tbcidade as b 
+where a.nome = 'Brasília/DF' and st_distance(a.geom, b.geom) < 0.9;
+
+
+-- Exercício 9
+-- Fazer uma consulta para obter o menor círculo que delimita os pontos obtidos na cláusula do Exercício 7.
+select ST_MinimumBoundingCircle(st_union(b.geom)) as geom
+from tbcidade as a, tbcidade as b 
+where a.nome = 'Brasília/DF' and st_distance(a.geom, b.geom) < 0.9;
+
+
+-- Exercício 10
+-- Fazer uma consulta para criar um buffer de aproximadamente 10 km no entorno de cada ponto obtido na cláusula do Exercício 7.
+select st_buffer(b.geom, 0.09)  as geom
+from tbcidade as a, tbcidade as b 
+where a.nome = 'Brasília/DF' and st_distance(a.geom, b.geom) < 0.9;
