@@ -1,0 +1,90 @@
+–- 1- Fazer uma consulta para listar o comprimento de todas as linhas.  
+-- Use a função ST_GeometryType(geom) para obter o tipo da geometria e compare com o texto ST_LineString, pois é necessário selecionar apenas as geometrias que são linhas;
+-- Use a função ST_Length(geom) para obter o comprimento de uma linha;
+-- Use a função agrupadora sum.
+
+select SUM(ST_Length(geom)) as "Total"
+from tbMapa
+where ST_GeometryType(geom) = 'ST_LineString';
+
+
+-- 2- Fazer uma consulta para listar as geometrias que fazem interseção com as coordenadas (x:7, y:14).
+-- Use a função ST_GeomFromText(wkt, SRID) para criar uma geometria a partir de texto bem formado (WKT).
+-- Lembre-se que o SRID dos dados da tbmapa é 4326;
+-- A WKT de um ponto possui o formato Point(x y);
+-- Use a função ST_Intersects(geom, geom).
+
+select gid, cor
+from tbMapa 
+where ST_Intersects(ST_GeomFromText('Point(7 14)', 4326), geom);
+
+-- 3- Fazer uma consulta para listar a geometria mais distante das coordenadas (x:7, y:14). 
+-- Use as funções ST_GeomFromText(geom) e ST_Distance(geom,geom);
+-- Use os termos order by e limit.
+
+select gid, ST_Distance(ST_GeomFromText('Point(7 14)', 4326), geom) as "Distância"
+from tbMapa
+order by ST_Distance(ST_GeomFromText('Point(7 14)', 4326), geom) desc
+limit 1;
+
+
+-- 4- Fazer uma consulta para listar as geometrias tocadas por uma linha.
+-- Use as funções ST_Touches(geom, geom) e ST_GeometryType para identificar as geometrias do tipo ST_LineString.
+
+select a.gid, b.gid
+from tbMapa as a, tbMapa as b
+where ST_Touches(a.geom, b.geom) and ST_GeometryType(b.geom) = 'ST_LineString';
+
+-- 5- Fazer uma consulta para listar as interseções entre linhas.
+-- Use a função ST_GeometryType(geom) para identificar o tipo ST_LineString;
+-- Use a função ST_Intersects(geom, geom) para selecionar as geometrias que possuem interseção;
+-- Use a função ST_Intersection(geom,geom) para obter as interseções entre as geometrias;
+-- Use a função ST_AsText(geom) para obter o WKT da geometria.
+
+select a.gid, b.gid, ST_AsText(ST_Intersection(a.geom, b.geom))
+from tbMapa as a, tbMapa as b
+where ST_GeometryType(a.geom) = 'ST_LineString' and ST_GeometryType(b.geom) = 'ST_LineString' and ST_Intersects(a.geom, b.geom)
+
+-------- DATA -------
+
+-- Cláusula para excluir a tabela se ela existir
+drop table if exists tbmapa;
+
+-- Cláusula para criar a tabela
+CREATE TABLE if not exists tbmapa (
+  gid SERIAL NOT NULL,
+  cor VARCHAR(10) NOT NULL,
+  geom geometry(Geometry,4326),
+  CONSTRAINT tbmapa_pkey PRIMARY KEY (gid)
+);
+
+-- Cláusula para preencher a tabela
+insert into tbmapa(gid,cor,geom)
+values
+(1,'azul',st_geomfromtext('Polygon((0 0, 3 0, 3 2, 5 2, 5 4, 7 4, 7 6, 2 6, 2 5, 4 5, 4 3, 0 3, 0 0))',4326)),
+(2,'amarelo',st_geomfromtext('Polygon((1 3, 4 3, 4 4, 1 4, 1 3))',4326)),
+(3,'vermelho',st_geomfromtext('Polygon((0 3, 1 3, 1 4, 4 4, 4 5, 2 5, 2 6, 1 6, 1 8, 0 8, 0 3))',4326)),
+(4,'amarelo',st_geomfromtext('Polygon((0 8, 1 8, 1 6, 4 6, 4 15, 0 15, 0 8))',4326)),
+(5,'verde',st_geomfromtext('Polygon((4 6, 7 6, 7 7, 10 7, 10 11, 4 11, 4 6))',4326)),
+(6,'laranja',st_geomfromtext('Polygon((3 0, 18 0, 18 5, 7 5, 7 4, 5 4, 5 2, 3 2, 3 0),(8 2, 11 2, 11 4, 8 4, 8 2),(13 3, 14 3, 14 1, 16 1, 16 4, 13 4, 13 3))',4326)),
+(7,'verde',st_geomfromtext('Polygon((8 2, 11 2, 11 4, 8 4, 8 2))',4326)),
+(8,'azul',st_geomfromtext('Polygon((13 3, 14 3, 14 1, 16 1, 16 4, 13 4, 13 3))',4326)),
+(9,'vermelho',st_geomfromtext('Polygon((7 5, 19 5, 19 8, 16 8, 16 10, 10 10, 10 7, 7 7, 7 5),(12 7, 14 7, 14 9, 12 9, 12 7))',4326)),
+(10,'verde',st_geomfromtext('Polygon((12 7, 14 7, 14 9, 12 9, 12 7))',4326)),
+(11,'azul',st_geomfromtext('Polygon((18 0, 28 0, 28 9, 19 9, 19 5, 18 5, 18 0),(21 6, 23 6, 23 8, 21 8, 21 6),(20 1, 25 1, 25 5, 20 5, 20 1),(25 5, 26 5, 26 6, 25 6, 25 5))',4326)),
+(12,'verde',st_geomfromtext('Polygon((21 6, 23 6, 23 8, 21 8, 21 6))',4326)),
+(13,'verde',st_geomfromtext('Polygon((20 1, 25 1, 25 5, 20 5, 20 1))',4326)),
+(14,'vermelho',st_geomfromtext('Polygon((25 5, 26 5, 26 6, 25 6, 25 5))',4326)),
+(15,'amarelo',st_geomfromtext('Polygon((15 10, 16 10, 16 8, 19 8, 19 9, 21 9, 21 12, 15 12, 15 10))',4326)),
+(16,'vermelho',st_geomfromtext('Polygon((21 9, 28 9, 28 15, 26 15, 26 12, 21 12, 21 9))',4326)),
+(17,'laranja',st_geomfromtext('Polygon((15 12, 26 12, 26 15, 15 15, 15 12))',4326)),
+(18,'azul',st_geomfromtext('Polygon((4 11, 10 11, 10 10, 15 10, 15 15, 4 15, 4 11))',4326)),
+(19,'vermelho',st_geomfromtext('LineString(2 9, 6 14, 15 14)',4326)),
+(20,'azul',st_geomfromtext('LineString(19 12, 26 4)',4326)),
+(21,'verde',st_geomfromtext('LineString(3 8, 9 8, 9 1, 18 2)',4326)),
+(22,'vermelho',st_geomfromtext('LineString(15 1, 22 12, 9 1, 18 2)',4326)),
+(23,'verde',st_geomfromtext('Point(7 10)',4326)),
+(24,'azul',st_geomfromtext('Point(17 14)',4326)),
+(25,'vermelho',st_geomfromtext('Point(6 3)',4326)),
+(26,'azul',st_geomfromtext('Point(21 2)',4326)),
+(27,'vermelho',st_geomfromtext('Point(24 2)',4326));
