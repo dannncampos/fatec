@@ -1,0 +1,116 @@
+-- 1 – Fazer uma consulta para obter um buffer de raio 0.1 no entorno das linhas que não são vermelhas. Carregue o resultado como nova camada do QGIS com o seguinte estilo:
+-- Cor do preenchimento: #ff0000
+-- Cor do contorno: #000000
+-- Estilo de preenchimento: Denso 6
+-- Espessura da borda: 0.25
+-- Transparência: 50%
+-- use a função ST_Buffer(geom, raio).
+
+select ST_Buffer(geom,0.1) as "geom"
+from tblinha
+where cor != 'vermelho'
+
+-- 2 – Fazer uma consulta para obter os polígonos vermelhos que fazem interseção com o resultado do Exercício 1. Carregue o resultado como nova camada do QGIS com o seguinte estilo:
+-- Cor do preenchimento: #000000
+-- Cor do contorno: #000000
+-- Estilo de preenchimento: Denso 7
+-- Espessura da borda: 0.25
+-- Transparência: 60%
+-- use a função ST_Intersects(geom, geom) e a cláusula do Exercício 1 como subconsulta.
+
+from tbmapa as a, (select ST_Buffer(geom,0.1) as "geom"
+	from tblinha
+	where cor != 'vermelho') as b    --PRIMEIRO exercicio
+where a.cor = 'vermelho' and ST_Intersects(a.geom, b.geom)
+
+-- 3 – Fazer uma consulta para obter os polígonos vizinhos do polígono que possui a maior área. Carregue o resultado como nova camada do QGIS.
+-- Atividade de Avaliação XI – 10/mai
+-- Banco de Dados Geográficos – Prof. Arley
+-- use a função ST_Touches(geom, geom) e uma subconsulta com a geometria que possui a maior área.
+
+select a.geom
+from tbmapa as a, (select b.geom
+	from tbmapa as b
+	order by st_area(b.geom) desc
+	limit 1) as c         --irá selecionar apenas a geometria que tem a maior área. 
+where st_touches(a.geom, c.geom)
+
+-- 4 – Alterar a consulta do Exercício 3 para retornar uma única geometria. Carregue o resultado como nova camada do QGIS.
+-- use a função agrupadora ST_Union(geom).
+
+select ST_Union(a.geom)
+from tbmapa as a, (select b.geom
+	from tbmapa as b
+	order by st_area(b.geom) desc
+	limit 1) as c   --irá selecionar apenas a geometria que tem a maior área.
+where st_touches(a.geom, c.geom)
+
+-- 5 – Fazer uma consulta para obter uma linha que liga cada ponto da tbponto ao ponto com as coordenadas (0,0).
+-- Carregue o resultado como nova camada do QGIS.
+
+select ST_MakeLine(ST_PointFromText('Point(0 0)', 4326), (geom)) 
+from tbponto;
+
+-- Cláusula para excluir as tabelas se elas existirem
+drop table if exists tbmapa;
+drop table if exists tblinha;
+drop table if exists tbponto;
+
+-- Cláusula para criar as tabelas
+CREATE TABLE if not exists tbmapa (
+ gid SERIAL NOT NULL,
+ cor VARCHAR(10) NOT NULL,
+ geom geometry(Polygon,4326),
+ CONSTRAINT tbmapa_pkey PRIMARY KEY (gid)
+);
+
+CREATE TABLE if not exists tblinha (
+ gid SERIAL NOT NULL,
+ cor VARCHAR(10) NOT NULL,
+ geom geometry(LineString,4326),
+ CONSTRAINT tblinha_pkey PRIMARY KEY (gid)
+);
+
+CREATE TABLE if not exists tbponto (
+ gid SERIAL NOT NULL,
+ cor VARCHAR(10) NOT NULL,
+ geom geometry(Point,4326),
+ CONSTRAINT tbponto_pkey PRIMARY KEY (gid)
+);
+
+-- Cláusula para preencher as tabelas
+insert into tbmapa(gid,cor,geom)
+values
+(1,'azul',st_geomfromtext('Polygon((0 0, 0.3 0, 0.3 0.2, 0.5 0.2, 0.5 0.4, 0.7 0.4, 0.7 0.6, 0.2 0.6, 0.2 0.5, 0.4 0.5, 0.4 0.3, 0 0.3, 0 0))',4326)),
+(2,'amarelo',st_geomfromtext('Polygon((0.1 0.3, 0.4 0.3, 0.4 0.4, 0.1 0.4, 0.1 0.3))',4326)),
+(3,'vermelho',st_geomfromtext('Polygon((0 0.3, 0.1 0.3, 0.1 0.4, 0.4 0.4, 0.4 0.5, 0.2 0.5, 0.2 0.6, 0.1 0.6, 0.1 0.8, 0 0.8, 0 0.3))',4326)),
+(4,'amarelo',st_geomfromtext('Polygon((0 0.8, 0.1 0.8, 0.1 0.6, 0.4 0.6, 0.4 1.5, 0 1.5, 0 0.8))',4326)),
+(5,'verde',st_geomfromtext('Polygon((0.4 0.6, 0.7 0.6, 0.7 0.7, 1.0 0.7, 1.0 1.1, 0.4 1.1, 0.4 0.6))',4326)),
+(6,'laranja',st_geomfromtext('Polygon((0.3 0, 1.8 0, 1.8 0.5, 0.7 0.5, 0.7 0.4, 0.5 0.4, 0.5 0.2, 0.3 0.2, 0.3 0),(0.8 0.2, 1.1 0.2, 1.1 0.4, 0.8 0.4, 0.8 0.2),(1.3 0.3, 1.4 0.3, 1.4 0.1, 1.6 0.1, 1.6 0.4, 1.3 0.4, 1.3 0.3))',4326)),
+(7,'verde',st_geomfromtext('Polygon((0.8 0.2, 1.1 0.2, 1.1 0.4, 0.8 0.4, 0.8 0.2))',4326)),
+(8,'azul',st_geomfromtext('Polygon((1.3 0.3, 1.4 0.3, 1.4 0.1, 1.6 0.1, 1.6 0.4, 1.3 0.4, 1.3 0.3))',4326)),
+(9,'vermelho',st_geomfromtext('Polygon((0.7 0.5, 1.9 0.5, 1.9 0.8, 1.6 0.8, 1.6 1.0, 1.0 1.0, 1.0 0.7, 0.7 0.7, 0.7 0.5),(1.2 0.7, 1.4 0.7, 1.4 0.9, 1.2 0.9, 1.2 0.7))',4326)),
+(10,'verde',st_geomfromtext('Polygon((1.2 0.7, 1.4 0.7, 1.4 0.9, 1.2 0.9, 1.2 0.7))',4326)),
+(11,'azul',st_geomfromtext('Polygon((1.8 0, 2.8 0, 2.8 0.9, 1.9 0.9, 1.9 0.5, 1.8 0.5, 1.8 0),(2.1 0.6, 2.3 0.6, 2.3 0.8, 2.1 0.8, 2.1 0.6),(2.0 0.1, 2.5 0.1, 2.5 0.5, 2.0 0.5, 2.0 0.1),(2.5 0.5, 2.6 0.5, 2.6 0.6, 2.5 0.6, 2.5 0.5))',4326)),
+(12,'verde',st_geomfromtext('Polygon((2.1 0.6, 2.3 0.6, 2.3 0.8, 2.1 0.8, 2.1 0.6))',4326)),
+(13,'verde',st_geomfromtext('Polygon((2.0 0.1, 2.5 0.1, 2.5 0.5, 2.0 0.5, 2.0 0.1))',4326)),
+(14,'vermelho',st_geomfromtext('Polygon((2.5 0.5, 2.6 0.5, 2.6 0.6, 2.5 0.6, 2.5 0.5))',4326)),
+(15,'amarelo',st_geomfromtext('Polygon((1.5 1.0, 1.6 1.0, 1.6 0.8, 1.9 0.8, 1.9 0.9, 2.1 0.9, 2.1 1.2, 1.5 1.2, 1.5 1.0))',4326)),
+(16,'vermelho',st_geomfromtext('Polygon((2.1 0.9, 2.8 0.9, 2.8 1.5, 2.6 1.5, 2.6 1.2, 2.1 1.2, 2.1 0.9))',4326)),
+(17,'laranja',st_geomfromtext('Polygon((1.5 1.2, 2.6 1.2, 2.6 1.5, 1.5 1.5, 1.5 1.2))',4326)),
+(18,'azul',st_geomfromtext('Polygon((0.4 1.1, 1.0 1.1, 1.0 1.0, 1.5 1.0, 1.5 1.5, 0.4 1.5, 0.4 1.1))',4326));
+
+insert into tblinha(gid,cor,geom)
+values
+(1,'vermelho',st_geomfromtext('LineString(0.2 0.9, 0.6 1.4, 1.5 1.4)',4326)),
+(2,'azul',st_geomfromtext('LineString(1.9 1.2, 2.6 0.4)',4326)),
+(3,'verde',st_geomfromtext('LineString(0.3 0.8, 0.9 0.8, 0.9 0.1, 1.8 0.2)',4326)),
+(4,'vermelho',st_geomfromtext('LineString(1.5 0.1, 2.2 1.2, 0.9 0.1, 1.8 0.2)',4326));
+
+insert into tbponto(gid,cor,geom)
+values
+(1,'verde',st_geomfromtext('Point(0.7 1.0)',4326)),
+(2,'azul',st_geomfromtext('Point(1.7 1.4)',4326)),
+(3,'vermelho',st_geomfromtext('Point(0.6 0.3)',4326)),
+(4,'azul',st_geomfromtext('Point(2.1 0.2)',4326)),
+(5,'vermelho',st_geomfromtext('Point(2.4 0.2)',4326));
