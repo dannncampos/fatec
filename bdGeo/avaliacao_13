@@ -1,0 +1,46 @@
+-- 1– Fazer uma consulta para listar as cidades que fazem interseção com a bacia São Francisco e carregar o resultado como nova camada do QGIS.
+-- use a função ST_Intersects(geom,geom) e será necessário incluir as tabelas tbcidade e tbbacia no from.
+
+select b.geom as "geom"
+from(
+	select geom as "geom"
+	from tbbacia
+	where nome = 'São Francisco'
+) as a, tbcidade as b
+where ST_Intersects(a.geom, b.geom);
+
+-- 2– Alterar a cláusula do Exercício 1 para contar a quantidade de cidades que fazem interseção com a bacia São Francisco.
+-- adicione a função count.
+
+select count(a.*)
+from tbcidade as a, tbbacia as b
+where b.nome = 'São Francisco' and ST_Intersects(a.geom,b.geom);
+
+-- outra forma
+
+select count(a.*) as "geom"
+from(
+	select geom as "geom"
+	from tbbacia
+	where nome = 'São Francisco'
+) as a, tbcidade as b
+where ST_Intersects(a.geom,b.geom);
+
+-- 3- Fazer uma consulta para listar os centroides das bacias e carregar o resultado como nova camada do QGIS.
+-- use a função ST_Centroid(geom).
+
+select ST_Centroid(geom) as "geom"
+from tbbacia;
+
+-- 4 – Fazer uma consulta para listar a distância entre as cidades de Santa Branca/SP e Paraibuna/SP.
+-- use a função ST_Distance(geom, geom) e será necessário incluir a tbcidade duas vezes no from
+
+select ST_Distance(a.geom, b.geom) as "geom"
+from tbcidade as a, tbcidade as b
+where a.nome = 'Santa Branca/SP' and b.nome = 'Paraibuna/SP';
+
+-- 5- Alterar a cláusula do Exercício 4 para obter o resultado em metros. Para isso será necessário converter as geometrias para EPSG:31983 SIRGAS 2000 / UTM zone 23S.Dica: use a função ST_Transform(geom,srid) para transformar cada geometria de WGS84 para SIRGAS 2000 / UTM zona 23S.
+
+select ST_Distance(ST_Transform(a.geom, 31983), ST_Transform(b.geom, 31983)) as "geom"
+from tbcidade as a, tbcidade as b
+where a.nome = 'Santa Branca/SP' and b.nome = 'Paraibuna/SP';
