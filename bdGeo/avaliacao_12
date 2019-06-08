@@ -1,0 +1,49 @@
+-- 1– Fazer uma consulta para listar o município de Santa Branca e carregar o resultado como nova camada do QGIS
+
+select geom as "geom"
+from tbmunicipio
+where municipio = 'Santa Branca';
+
+-- 2- Fazer uma consulta para listar os municípios vizinhos de Santa Branca e carregar o resultado como nova camada do QGIS.
+-- use a função ST_Touches(geom, geom) e será necessário incluir a tabela duas vezes no from.
+
+select b.* as "geom"
+from(
+	select geom as "geom"
+	from tbmunicipio
+	where municipio = 'Santa Branca'
+) as a, tbmunicipio as b
+where ST_Touches(a.geom, b.geom);
+
+-- 3 – Fazer uma consulta para listar a área de cada município vizinho de Santa Branca.
+-- adicione a função ST_Area(geom) na cláusula do Exercício 2.
+
+select b.municipio, st_area(b.geom) as "geom"
+from(
+	select geom as "geom"
+	from tbmunicipio
+	where municipio = 'Santa Branca'
+) as a, tbmunicipio as b
+where ST_Touches(a.geom, b.geom)
+
+-- 4- Fazer uma consulta para unir as geometrias dos municípios vizinhos de Santa Branca.
+-- adicione a função ST_Union(geom) na cláusula do Exercício 2.
+
+select ST_Union(b.geom) as "geom"
+from(
+	select geom as "geom"
+	from tbmunicipio
+	where municipio = 'Santa Branca'
+) as a, tbmunicipio as b
+where ST_Touches(a.geom, b.geom);
+
+-- 5- Fazer uma consulta para listar a área da geometria resultante do Exercício 4.
+Dica: adicione a função ST_Area(geom) na cláusula do Exercício 4.
+
+select ST_Area(ST_Union(b.geom)) as "geom"
+from(
+	select geom as "geom"
+	from tbmunicipio
+	where municipio = 'Santa Branca'
+) as a, tbmunicipio as b
+where ST_Touches(a.geom, b.geom);
